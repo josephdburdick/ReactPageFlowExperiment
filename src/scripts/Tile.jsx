@@ -8,11 +8,13 @@ let Tile = React.createClass({
 	  		this.shouldScroll = true;
 	  		this.minIndexWas = this.props.minIndex;
 	  		this.positionBackTo = $(window).scrollTop();
+		} else if (this.props.jumpToContentIndex != null) {
+			this.jumpToContentIndexWas = this.props.jumpToContentIndex;
 		}
 	}, 
 	componentDidMount: function() {
 		if (this.props.contentIndex === this.props.jumpToContentIndex) {
-			console.log('i am the new tile added at the bottom. scroll me to the top of the page.');
+			console.log('i am the new tile added at the bottom, containing the jump content. scroll me to the top of the page.');
 			let node = this.getDOMNode();
 			$(window).scrollTop(node.offsetTop);
 			this.shouldScroll = false;
@@ -27,6 +29,13 @@ let Tile = React.createClass({
 			// TODO: the offsetHeight to use here is the height of the new tile above - not the current one
 			let nodeAboveHeight = node.offsetHeight;
 			$(window).scrollTop(this.positionBackTo + nodeAboveHeight);
+			this.shouldScroll = false;
+			this.positionBackTo = null;
+			this.props.jumpToContentDoneRef();
+		} else if (this.jumpToContentIndexWas != this.props.jumpToContentIndex && this.props.contentIndex === this.props.jumpToContentIndex) {
+			console.log('i am an existing tile containing the jump content. scroll me to the top of the page.');
+			let node = this.getDOMNode();
+			$(window).scrollTop(node.offsetTop);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
 			this.props.jumpToContentDoneRef();
