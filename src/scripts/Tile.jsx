@@ -8,12 +8,17 @@ let Tile = React.createClass({
 	  		this.shouldScroll = true;
 	  		this.minIndexWas = this.props.minIndex;
 	  		this.positionBackTo = $(window).scrollTop();
-		} 
-		// else if (this.props.jumpToContentIndex === this.props.contentIndex) {
-		// 	this.shouldScroll = true;
-	 //  		this.jumpToContentIndexWas = this.props.jumpToContentIndex;
-		// }
+		}
 	}, 
+	componentDidMount: function() {
+		if (this.props.contentIndex === this.props.jumpToContentIndex) {
+			console.log('i am the new tile added at the bottom. scroll me to the top of the page.');
+			let node = this.getDOMNode();
+			$(window).scrollTop(node.offsetTop);
+			this.shouldScroll = false;
+			this.positionBackTo = null;
+		}
+	},
 	componentDidUpdate: function() {
 		if (this.shouldScroll && this.minIndexWas !== this.props.minIndex) {
 			console.log('a new tile has been added above me. scroll back to me.');
@@ -23,14 +28,7 @@ let Tile = React.createClass({
 			$(window).scrollTop(this.positionBackTo + nodeAboveHeight);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
-		} 
-		// else if (this.shouldScroll && this.jumpToContentIndexWas === this.props.jumpToContentIndex) {
-		// 	console.log('i am the new tile added at the bottom. scroll me to the top of the page.');
-		// 	let node = this.getDOMNode();
-		// 	node.scrollTop = 0;
-		// 	this.shouldScroll = false;
-		// 	this.positionBackTo = null;
-		// }
+		}
 	},
 	render: function() {
 		let classNames = (this.props.index === this.props.minIndex?"content-tile first":(this.props.jumpToContentIndex === this.props.contentIndex?"content-tile jumped":"content-tile"));

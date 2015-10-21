@@ -62,6 +62,7 @@ let Tiles = React.createClass({
 		} else {
 			console.log('content not found. adding a tile to host it.');
 			tilesList.setState({'isInSensitiveZone_down': true,
+								'isInSensitiveZone_up': false,
 								'isInSensitiveZone_actionTaken': false, 
 								'jumpToContentIndex': requestedContentIndex});
 		}
@@ -80,39 +81,45 @@ let Tiles = React.createClass({
 	      let $appContainer = $('#app');
 
 	      window.onscroll = function() {
-	        let thisScrollTop = Math.round($(this).scrollTop()),
-	            thisInnerHeight = Math.round($(this).innerHeight()),
-	            containeR = window,
-	            containeD = document,
-	            scrollPercent = 1 * $(containeR).scrollTop() / ($(containeD).height() - $(containeR).height());
+	      	if (tilesList.state.jumpToContentIndex == null) {
+		      	let thisScrollTop = Math.round($(this).scrollTop()),
+		            thisInnerHeight = Math.round($(this).innerHeight()),
+		            containeR = window,
+		            containeD = document,
+		            scrollPercent = 1 * $(containeR).scrollTop() / ($(containeD).height() - $(containeR).height());
 
-	        let lower_threshold = thisScrollTop + thisInnerHeight + 1;
-	        if(lower_threshold >= $appContainer.outerHeight())
-	        {
-	        	if (!tilesList.state.isInSensitiveZone_down)
-	        	{
-	        		console.log("reaching end of page.");
-	        		tilesList.setState({'isInSensitiveZone_down': true, 
-	        							'isInSensitiveZone_actionTaken': false,
-	        							'jumpToContentIndex': null});
-	        	}
-	        } 
-	        else if(thisScrollTop < UPPER_THRESHOLD)
-	        {
-	        	if (!tilesList.state.isInSensitiveZone_up)
-	        	{
-	        		console.log("reaching beginning of page.");
-	        		tilesList.setState({'isInSensitiveZone_up': true, 
-	        							'isInSensitiveZone_actionTaken': false,
-	        							'jumpToContentIndex': null});
-	        	}
-	        }
-	        else
-	        {
-	        	console.log('on neutral grounds.');
-	        	tilesList.setState({'isInSensitiveZone_up': false, 
-	        						'isInSensitiveZone_down': false});
-	        }
+		        let lower_threshold = thisScrollTop + thisInnerHeight + 1;
+		        if(lower_threshold >= $appContainer.outerHeight())
+		        {
+		        	if (!tilesList.state.isInSensitiveZone_down)
+		        	{
+		        		console.log("reaching end of page.");
+		        		tilesList.setState({'isInSensitiveZone_down': true,
+		        							'isInSensitiveZone_up': false, 
+		        							'isInSensitiveZone_actionTaken': false,
+		        							'jumpToContentIndex': null});
+		        	}
+		        } 
+		        else if(thisScrollTop < UPPER_THRESHOLD)
+		        {
+		        	if (!tilesList.state.isInSensitiveZone_up)
+		        	{
+		        		console.log("reaching beginning of page.");
+		        		tilesList.setState({'isInSensitiveZone_up': true,
+		        							'isInSensitiveZone_down': false,
+		        							'isInSensitiveZone_actionTaken': false,
+		        							'jumpToContentIndex': null});
+		        	}
+		        }
+		        else
+		        {
+		        	console.log('on neutral grounds.');
+		        	tilesList.setState({'isInSensitiveZone_up': false, 
+		        						'isInSensitiveZone_down': false});
+		        }
+	      	} else {
+	      		console.log('a tile is being accessed.');
+	      	}
 	      };
 	    });
 
