@@ -31,7 +31,7 @@ let Tiles = React.createClass({
 		let tiles = _.map(seq, number => <Tile index={number} minIndex={this.state.countBefore}/>);
 		let tilesList = this;
 
-		history.pushState(null, null, [window.location.origin, window.location.pathname, ['?from', seq[0], '&to=', seq[seq.length -1]].join(''), window.location.hash].join(''));
+		history.pushState(null, null, [window.location.origin, window.location.pathname, ['?from=', seq[0], '&to=', seq[seq.length -1]].join(''), window.location.hash].join(''));
 
 		$(function($) {
 	      let $appContainer = $('#app');
