@@ -13,6 +13,12 @@ var tilesActions = {
       actionType: actionsConstants.ADD_TILE_UP,
       data: contentIndex
     })
+  },
+  addFirstTile: function(contentIndex){
+    AppDispatcher.handleAction({
+      actionType: actionsConstants.ADD_FIRST_TILE,
+      data: contentIndex
+    });
   }
 };
 

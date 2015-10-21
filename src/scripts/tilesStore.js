@@ -59,6 +59,16 @@ let addTileUp = function(contentIndex) {
     _store.contentToTileMapping.push({tileIndex: _store.minTileIndex, contentIndex: associatedContentIndex});
 };
 
+let addFirstTileDown = function(contentIndex) {
+    // reset store
+    _store.contentToTileMapping = [];
+    _store.maxTileIndex = -1;
+    _store.minTileIndex = 0;
+    _store.defaultContentIndex = 0;
+
+    addTileDown(contentIndex);
+};
+
 let tilesStore = objectAssign({}, EventEmitter.prototype, {
   addChangeListener: function(cb){
     this.on(eventsConstants.CHANGE_EVENT, cb);
@@ -88,6 +98,10 @@ AppDispatcher.register(function(payload)
     break;
     case actionsConstants.ADD_TILE_UP:
       addTileUp(action.data);
+      tilesStore.emit(eventsConstants.CHANGE_EVENT);
+    break;
+    case actionsConstants.ADD_FIRST_TILE:
+      addFirstTileDown(action.data);
       tilesStore.emit(eventsConstants.CHANGE_EVENT);
     break;
     default:

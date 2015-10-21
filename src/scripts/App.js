@@ -12,8 +12,8 @@ App.views.Tiles = require('./Tiles.jsx');
 let routes = (
   <Router>
     <Route path="/" component={App.views.MainContainer}>
-      <Route path="home" routeNameRef="home" component={App.views.Tiles}/>
-      <Route path="work" routeNameRef="work" component={App.views.Tiles}/>
+      <Route path="home" component={App.views.Tiles}/>
+      <Route path="work" component={App.views.Tiles}/>
     </Route>
   </Router>
 );

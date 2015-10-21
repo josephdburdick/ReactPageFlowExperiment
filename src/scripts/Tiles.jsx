@@ -24,6 +24,7 @@ let Tiles = React.createClass({
 	componentDidMount: function(){
 		tilesStore.addChangeListener(this._onTilesDataChanged);
 		tilesActions.addTileDown();
+		this.setState({currentRoute: this.props.location.pathname});
 	},
 	componentWillUnmount: function(){
 		tilesStore.removeChangeListener(this._onTilesDataChanged);
@@ -35,6 +36,11 @@ let Tiles = React.createClass({
 			} else if (this.state.isInSensitiveZone_down) {
 				tilesActions.addTileDown(this.state.jumpToContentIndex);
 			}
+		}
+
+		if (this.props.location.pathname !== this.state.currentRoute) {
+			this.setState({currentRoute: this.props.location.pathname});
+			tilesActions.addFirstTile(this.props.location.pathname);
 		}
 	},
 	_onTilesDataChanged: function(){
@@ -78,6 +84,10 @@ let Tiles = React.createClass({
 		const UPPER_THRESHOLD = 50;
 
 		let tileIndexes = _.range(this.state.countBefore, this.state.countAfter + 1);
+
+		if (tileIndexes.length === 1) {
+			$(window).scrollTop(0);
+		}
 
 		let tileComponents = _.map(tileIndexes, currentTileIndex => <Tile index={currentTileIndex} contentIndex={_.findWhere(tilesList.state.mappingContentToTile, {tileIndex: currentTileIndex}).contentIndex} minIndex={this.state.countBefore} maxIndex={this.state.countAfter} jumpToContentIndex={this.state.jumpToContentIndex} jumpToContentCTARef={this._jumpToContentCTA} jumpToContentDoneRef={this._hasJumped}/>);
 
