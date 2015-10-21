@@ -226,6 +226,7 @@ gulp.task('serve', ['scripts', 'styles', 'fonts'], () => {
 
   gulp.watch(`${path.STYLES}/**/*.scss`, ['styles']);
   gulp.watch(`${path.SRC}/scripts/**/*.js`, ['watchScripts', reload]);
+  gulp.watch(`${path.SRC}/scripts/**/*.jsx`, ['watchScripts', reload]);
   gulp.watch(`${path.SRC}/fonts/**/*`, ['fonts']);
   gulp.watch('bower.json', ['wiredep', 'fonts']);
 });

@@ -1,5 +1,6 @@
 let
-  React = require('react');
+  React = require('react'),
+  JumpButton = require('./JumpButton.jsx');
 
 let Tile = React.createClass({
 	componentWillUpdate: function() {
@@ -12,7 +13,7 @@ let Tile = React.createClass({
 	componentDidUpdate: function() {
 		if (this.shouldScroll && this.minIndex !== this.props.minIndex) {
 			var node = this.getDOMNode();
-			// node.scrollTop = 0;
+			// the offsetHeight to use here is the height of the new tile - not the current one
 			$(window).scrollTop(this.positionBackTo + node.offsetHeight);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
@@ -23,7 +24,8 @@ let Tile = React.createClass({
 
 		return (
 			<div className={classNames}>
-				<p>{this.props.index} : Lorem Ipsum.</p>
+				<p>#T{this.props.index} : #C{this.props.contentIndex} Lorem Ipsum.</p>
+				<JumpButton rangeContentMin={0} rangeContentMax={this.props.maxIndex + 100} jumpToContentCTARef={this.props.jumpToContentCTARef}/>
 			</div>
 		);
 	}
