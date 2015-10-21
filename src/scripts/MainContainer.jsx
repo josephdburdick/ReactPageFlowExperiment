@@ -1,19 +1,14 @@
-let
-  React = require('react'),
-  Router = require('react-router'),
-  Route = Router.Route,
-  Link = Router.Link,
-  DefaultRoute = Router.DefaultRoute,
-  RouteHandler = Router.RouteHandler;
+import React from 'react'
+import { Router, Route, Link } from 'react-router'
 
 let MainContainer = React.createClass({
 	render: function() {
 		return (
 			<div className="main-container">
 				<div className="navigation-bar">
-					Menu here.
+					Menu here. FYI, current route is "{this.props.location.pathname}"
 				</div>
-				<RouteHandler/>
+				{this.props.children || "Welcome to the site"}
 			</div>
 		);
 	}

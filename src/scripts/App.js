@@ -3,24 +3,20 @@ let
   App.config = require('./config.js');
   App.views = {};
 
-let
-  React = require('react'),
-  Router = require('react-router'),
-  Route = Router.Route,
-  Link = Router.Link,
-  DefaultRoute = Router.DefaultRoute,
-  RouteHandler = Router.RouteHandler;
+import React from 'react'
+import { Router, Route, Link } from 'react-router'
 
 App.views.MainContainer = require('./MainContainer.jsx');
 App.views.Tiles = require('./Tiles.jsx');
 
 let routes = (
-  <Route path="/" handler={App.views.MainContainer}>
-    <Route name="home" handler={App.views.Tiles}/>
-    <DefaultRoute name="not-found" handler={App.views.Tiles}/>
-  </Route>
+  <Router>
+    <Route path="/" component={App.views.MainContainer}>
+      <Route path="home" routeNameRef="home" component={App.views.Tiles}/>
+      <Route path="work" routeNameRef="work" component={App.views.Tiles}/>
+    </Route>
+  </Router>
 );
 
-Router.run(routes, Router.HashLocation, function (Handler) {
-  React.render(<Handler/>, document.querySelector('#app'));
-});
+React.render(routes, document.querySelector('#app'));
+
