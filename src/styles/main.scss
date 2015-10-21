@@ -9,6 +9,10 @@ body {
   width: 40px;
 }
 
+.active-route {
+  background: lightblue;
+}
+
 .main-container {
   margin: 0;
 }
@@ -19,6 +23,7 @@ body {
   border: red 5px solid;
   position: fixed;
   top: 0;
+  display: inline-block;
 }
 
 .content-tile {
