@@ -17,6 +17,7 @@ let Tile = React.createClass({
 			$(window).scrollTop(node.offsetTop);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
+			this.props.jumpToContentDoneRef();
 		}
 	},
 	componentDidUpdate: function() {
@@ -28,6 +29,7 @@ let Tile = React.createClass({
 			$(window).scrollTop(this.positionBackTo + nodeAboveHeight);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
+			this.props.jumpToContentDoneRef();
 		}
 	},
 	render: function() {

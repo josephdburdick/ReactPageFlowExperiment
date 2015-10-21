@@ -17,7 +17,8 @@ let Tiles = React.createClass({
 		  // we cannot both update the state and take action - otherwise the state used after the action will not be refreshed to what we expect
 		  isInSensitiveZone_actionTaken: true,
 		  jumpToContentIndex: null,
-		  mappingContentToTile: []
+		  mappingContentToTile: [],
+		  hasJumpedToContent: true
 		}
 	},
 	componentDidMount: function(){
@@ -57,15 +58,20 @@ let Tiles = React.createClass({
 		if (contentAlreadyDisplayed != null) {
 			console.log('existing content found. scrolling to host tile #T' + contentAlreadyDisplayed.tileIndex);
 			// we need to trigger a state refresh so that the tile can highlight itself.
-			tilesList.setState({'needUiRefreshOnly': true,
-								'jumpToContentIndex': requestedContentIndex});
+			tilesList.setState({'jumpToContentIndex': requestedContentIndex,
+								'hasJumpedToContent': false});
 		} else {
 			console.log('content not found. adding a tile to host it.');
 			tilesList.setState({'isInSensitiveZone_down': true,
 								'isInSensitiveZone_up': false,
 								'isInSensitiveZone_actionTaken': false, 
-								'jumpToContentIndex': requestedContentIndex});
+								'jumpToContentIndex': requestedContentIndex,
+								'hasJumpedToContent': false});
 		}
+	},
+	_hasJumped : function() {
+		let tilesList = this;
+		tilesList.setState({'hasJumpedToContent': true});
 	},
 	render: function() {
 		let tilesList = this;
@@ -73,7 +79,7 @@ let Tiles = React.createClass({
 
 		let tileIndexes = _.range(this.state.countBefore, this.state.countAfter + 1);
 
-		let tileComponents = _.map(tileIndexes, currentTileIndex => <Tile index={currentTileIndex} contentIndex={_.findWhere(tilesList.state.mappingContentToTile, {tileIndex: currentTileIndex}).contentIndex} minIndex={this.state.countBefore} maxIndex={this.state.countAfter} jumpToContentIndex={this.state.jumpToContentIndex} jumpToContentCTARef={this._jumpToContentCTA}/>);
+		let tileComponents = _.map(tileIndexes, currentTileIndex => <Tile index={currentTileIndex} contentIndex={_.findWhere(tilesList.state.mappingContentToTile, {tileIndex: currentTileIndex}).contentIndex} minIndex={this.state.countBefore} maxIndex={this.state.countAfter} jumpToContentIndex={this.state.jumpToContentIndex} jumpToContentCTARef={this._jumpToContentCTA} jumpToContentDoneRef={this._hasJumped}/>);
 
 		history.pushState(null, null, [window.location.origin, window.location.pathname, ['?from=', tileIndexes[0], '&to=', tileIndexes[tileIndexes.length -1]].join(''), window.location.hash].join(''));
 
@@ -81,7 +87,7 @@ let Tiles = React.createClass({
 	      let $appContainer = $('#app');
 
 	      window.onscroll = function() {
-	      	if (tilesList.state.jumpToContentIndex == null) {
+	      	if (tilesList.state.hasJumpedToContent) {
 		      	let thisScrollTop = Math.round($(this).scrollTop()),
 		            thisInnerHeight = Math.round($(this).innerHeight()),
 		            containeR = window,
