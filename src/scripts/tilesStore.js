@@ -1,4 +1,5 @@
 let React = require('react'),
+    _ = require('underscore'),
     objectAssign = require('react/lib/Object.assign'),
     EventEmitter = require('events').EventEmitter,
     AppDispatcher = require('./AppDispatcher'),
@@ -6,17 +7,56 @@ let React = require('react'),
     eventsConstants = require('./eventsConstants');
 
 let _store = {
-  list: [],
-  count: 2,
-  countBackwards: 0
+  contentToTileMapping: [],
+  maxTileIndex: -1,
+  minTileIndex: 0,
+  defaultContentIndex: 0
 };
 
-let addTileDown = function(item) {
-    _store.count++;
+let addTileDown = function(contentIndex) {
+    let associatedContentIndex;
+    _store.maxTileIndex++;
+
+    if (contentIndex == null){
+      let contentIndexNotRenderedYet = false;
+
+      while(!contentIndexNotRenderedYet) {
+        _store.defaultContentIndex++;
+        if (_.findWhere(_store.contentToTileMapping, {contentIndex: _store.defaultContentIndex}) == null) {
+          contentIndexNotRenderedYet = true;
+        }
+      }
+
+      associatedContentIndex = _store.defaultContentIndex;   
+    } else {
+      associatedContentIndex = contentIndex;
+    }
+
+    console.log('retrieving data for #C' + associatedContentIndex);
+    _store.contentToTileMapping.push({tileIndex: _store.maxTileIndex, contentIndex: associatedContentIndex});
 };
 
-let addTileUp = function(item) {
-    _store.countBackwards--;
+let addTileUp = function(contentIndex) {
+    let associatedContentIndex;
+    _store.minTileIndex--;
+
+    if (contentIndex == null){
+      let contentIndexNotRenderedYet = false;
+
+      while(!contentIndexNotRenderedYet) {
+        _store.defaultContentIndex--;
+        if (_.findWhere(_store.contentToTileMapping, {contentIndex: _store.defaultContentIndex}) == null) {
+          contentIndexNotRenderedYet = true;
+        }
+      }
+
+      associatedContentIndex = _store.defaultContentIndex;   
+    } else {
+      associatedContentIndex = contentIndex;
+    }
+
+    console.log('retrieving data for #C' + associatedContentIndex);
+    _store.contentToTileMapping.push({tileIndex: _store.minTileIndex, contentIndex: associatedContentIndex});
 };
 
 let tilesStore = objectAssign({}, EventEmitter.prototype, {
@@ -27,10 +67,13 @@ let tilesStore = objectAssign({}, EventEmitter.prototype, {
     this.removeListener(eventsConstants.CHANGE_EVENT, cb);
   },
   getTilesDownCount: function(){
-    return _store.count;
+    return _store.maxTileIndex;
   },
   getTilesUpCount: function(){
-    return _store.countBackwards;
+    return _store.minTileIndex;
+  },
+  getContentToTilesMapping: function(){
+    return _store.contentToTileMapping;
   }
 });
 

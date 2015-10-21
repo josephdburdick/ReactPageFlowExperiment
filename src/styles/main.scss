@@ -24,10 +24,10 @@ body {
 .content-tile {
   border: 5px dashed pink;
   background-color: lightyellow;
-  height: 70vh;
+  height: 120vh; //no scrolling if less than viewport
 }
 
-.content-tile.old-first {
+.content-tile.jumped {
   background-color: lightgrey;
 }
 

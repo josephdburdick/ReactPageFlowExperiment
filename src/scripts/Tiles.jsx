@@ -16,11 +16,13 @@ let Tiles = React.createClass({
 		  isInSensitiveZone_down: false,
 		  // we cannot both update the state and take action - otherwise the state used after the action will not be refreshed to what we expect
 		  isInSensitiveZone_actionTaken: true,
-		  jumpToContentIndex: null
+		  jumpToContentIndex: null,
+		  mappingContentToTile: []
 		}
 	},
 	componentDidMount: function(){
 		tilesStore.addChangeListener(this._onTilesDataChanged);
+		tilesActions.addTileDown();
 	},
 	componentWillUnmount: function(){
 		tilesStore.removeChangeListener(this._onTilesDataChanged);
@@ -30,43 +32,47 @@ let Tiles = React.createClass({
 			if (this.state.isInSensitiveZone_up) {
 				tilesActions.addTileUp();
 			} else if (this.state.isInSensitiveZone_down) {
-				tilesActions.addTileDown();
+				tilesActions.addTileDown(this.state.jumpToContentIndex);
 			}
 		}
 	},
 	_onTilesDataChanged: function(){
 		let tilesList = this;
+		if (tilesList.state.jumpToContentIndex !== null) {
+			console.log('will now jump to #T'+ tilesStore.getTilesDownCount() + ' hosting #C' + tilesList.state.jumpToContentIndex);
+		}
 		tilesList.setState({
 		  countAfter: tilesStore.getTilesDownCount(),
 		  countBefore: tilesStore.getTilesUpCount(),
+		  mappingContentToTile: tilesStore.getContentToTilesMapping(),
 		  'isInSensitiveZone_actionTaken': true
 		});
-
-		if (tilesList.state.jumpToContentIndex !== null) {
-			console.log('will now jump to #T'+ tilesList.state.countAfter + ' hosting #C' + tilesList.state.jumpToContentIndex);
-			tilesList.setState({'jumpToContentIndex': null});
-		}
 	},
-	_jumpToContentCTA: function(contentIndex){
+	_jumpToContentCTA: function(requestedContentIndex){
 		let tilesList = this;
-		console.log('Let\'s jump to #C' + contentIndex);
+		console.log('Let\'s jump to #C' + requestedContentIndex);
 
-		let contentAlreadyDisplayed = false;
+		let contentAlreadyDisplayed = _.findWhere(tilesList.state.mappingContentToTile, {contentIndex: requestedContentIndex});
 
-		if (contentAlreadyDisplayed) {
-			console.log('existing content found. scrolling to host tile.');
+		if (contentAlreadyDisplayed != null) {
+			console.log('existing content found. scrolling to host tile #T' + contentAlreadyDisplayed.tileIndex);
+			// we need to trigger a state refresh so that the tile can highlight itself.
+			tilesList.setState({'needUiRefreshOnly': true,
+								'jumpToContentIndex': requestedContentIndex});
 		} else {
 			console.log('content not found. adding a tile to host it.');
 			tilesList.setState({'isInSensitiveZone_down': true,
 								'isInSensitiveZone_actionTaken': false, 
-								'jumpToContentIndex': contentIndex});
+								'jumpToContentIndex': requestedContentIndex});
 		}
 	},
 	render: function() {
 		let tilesList = this;
 		const UPPER_THRESHOLD = 50;
-		let tileIndexes = _.range(this.state.countBefore, this.state.countAfter);
-		let tileComponents = _.map(tileIndexes, tileIndex => <Tile index={tileIndex} contentIndex={tileIndex} minIndex={this.state.countBefore} maxIndex={this.state.countAfter} jumpToContentCTARef={this._jumpToContentCTA}/>);
+
+		let tileIndexes = _.range(this.state.countBefore, this.state.countAfter + 1);
+
+		let tileComponents = _.map(tileIndexes, currentTileIndex => <Tile index={currentTileIndex} contentIndex={_.findWhere(tilesList.state.mappingContentToTile, {tileIndex: currentTileIndex}).contentIndex} minIndex={this.state.countBefore} maxIndex={this.state.countAfter} jumpToContentIndex={this.state.jumpToContentIndex} jumpToContentCTARef={this._jumpToContentCTA}/>);
 
 		history.pushState(null, null, [window.location.origin, window.location.pathname, ['?from=', tileIndexes[0], '&to=', tileIndexes[tileIndexes.length -1]].join(''), window.location.hash].join(''));
 
@@ -87,7 +93,8 @@ let Tiles = React.createClass({
 	        	{
 	        		console.log("reaching end of page.");
 	        		tilesList.setState({'isInSensitiveZone_down': true, 
-	        							'isInSensitiveZone_actionTaken': false});
+	        							'isInSensitiveZone_actionTaken': false,
+	        							'jumpToContentIndex': null});
 	        	}
 	        } 
 	        else if(thisScrollTop < UPPER_THRESHOLD)
@@ -96,7 +103,8 @@ let Tiles = React.createClass({
 	        	{
 	        		console.log("reaching beginning of page.");
 	        		tilesList.setState({'isInSensitiveZone_up': true, 
-	        							'isInSensitiveZone_actionTaken': false});
+	        							'isInSensitiveZone_actionTaken': false,
+	        							'jumpToContentIndex': null});
 	        	}
 	        }
 	        else
