@@ -14,7 +14,9 @@ let MainContainer = React.createClass({
 			          <span className={workClassNames}><Link to="/work">Work</Link></span>
 			        </p>
 				</div>
-				{this.props.children || "Welcome to the site"}
+				<div className="data-content">
+					{this.props.children || "Welcome to the site"}
+				</div>
 			</div>
 		);
 	}

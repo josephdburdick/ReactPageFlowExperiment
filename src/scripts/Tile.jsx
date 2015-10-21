@@ -19,7 +19,7 @@ let Tile = React.createClass({
 			$(window).scrollTop(node.offsetTop);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
-			this.props.jumpToContentDoneRef();
+			this.props.reEnableScrollingDetectionRef();
 		}
 	},
 	componentDidUpdate: function() {
@@ -31,14 +31,23 @@ let Tile = React.createClass({
 			$(window).scrollTop(this.positionBackTo + nodeAboveHeight);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
-			this.props.jumpToContentDoneRef();
+			this.props.reEnableScrollingDetectionRef();
 		} else if (this.jumpToContentIndexWas != this.props.jumpToContentIndex && this.props.contentIndex === this.props.jumpToContentIndex) {
 			console.log('i am an existing tile containing the jump content. scroll me to the top of the page.');
 			let node = this.getDOMNode();
 			$(window).scrollTop(node.offsetTop);
 			this.shouldScroll = false;
 			this.positionBackTo = null;
-			this.props.jumpToContentDoneRef();
+			this.props.reEnableScrollingDetectionRef();
+		} else if (this.minIndex === this.maxIndex && this.props.minIndex === this.props.index && this.routeSingleScrollUpDone !== this.props.currentRoute && this.props.contentIndex === this.props.currentRoute) {
+			// we need to check both for a new route AND new content
+			// when the route is changed, all the components update ; the tile gets the new route before the tiles list does - and the tiles list is the one triggering the load of the content for the given route...
+			console.log('i am the only tile for this route change. scroll me to the top of the page.');
+			$(window).scrollTop(0);
+			this.routeSingleScrollUpDone = this.props.currentRoute;
+			this.shouldScroll = false;
+			this.positionBackTo = null;
+			this.props.reEnableScrollingDetectionRef();
 		}
 	},
 	render: function() {
