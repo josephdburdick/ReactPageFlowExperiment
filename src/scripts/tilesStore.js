@@ -66,7 +66,27 @@ let addFirstTileDown = function(contentIndex) {
     _store.minTileIndex = 0;
     _store.defaultContentIndex = 0;
 
-    addTileDown(contentIndex);
+    // addTileDown(contentIndex);
+    let associatedContentIndex;
+    _store.maxTileIndex++;
+
+    if (contentIndex == null){
+      let contentIndexNotRenderedYet = false;
+
+      while(!contentIndexNotRenderedYet) {
+        _store.defaultContentIndex++;
+        if (_.findWhere(_store.contentToTileMapping, {contentIndex: _store.defaultContentIndex}) == null) {
+          contentIndexNotRenderedYet = true;
+        }
+      }
+
+      associatedContentIndex = _store.defaultContentIndex;   
+    } else {
+      associatedContentIndex = contentIndex;
+    }
+
+    console.log('retrieving data for #C' + associatedContentIndex);
+    _store.contentToTileMapping.push({tileIndex: _store.maxTileIndex, contentIndex: associatedContentIndex});
 };
 
 let tilesStore = objectAssign({}, EventEmitter.prototype, {

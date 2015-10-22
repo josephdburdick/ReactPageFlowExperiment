@@ -23,7 +23,8 @@ let Tile = React.createClass({
 		}
 	},
 	componentDidUpdate: function() {
-		if (this.shouldScroll && this.minIndexWas !== this.props.minIndex) {
+		if (this.shouldScroll && this.minIndexWas !== this.props.minIndex && this.routeSingleScrollUpDone === this.props.currentRoute) {
+			// only within the same route
 			console.log('a new tile has been added above me. scroll back to me.');
 			let node = this.getDOMNode();
 			// TODO: the offsetHeight to use here is the height of the new tile above - not the current one

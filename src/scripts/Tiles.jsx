@@ -26,6 +26,7 @@ let Tiles = React.createClass({
 		tilesActions.addTileDown();
 		this.currentRoute = this.props.location.pathname;
 		this.scrollDetectionEnabled = true;
+		console.log('enabling scroll detection.');
 	},
 	componentWillUnmount: function(){
 		tilesStore.removeChangeListener(this._onTilesDataChanged);
@@ -43,6 +44,7 @@ let Tiles = React.createClass({
 			console.log('route has changed. display the one tile content.');
 			this.currentRoute = this.props.location.pathname;
 			this.scrollDetectionEnabled = false;
+			console.log('disabling scroll detection.');
 			tilesActions.addFirstTile(this.props.location.pathname);
 		}
 	},
@@ -51,6 +53,7 @@ let Tiles = React.createClass({
 		if (tilesList.state.jumpToContentIndex !== null) {
 			console.log('will now jump to #T'+ tilesStore.getTilesDownCount() + ' hosting #C' + tilesList.state.jumpToContentIndex);
 		}
+		console.log('tiles data change. update counts after/before to respectively ' + tilesStore.getTilesDownCount() + ', ' + tilesStore.getTilesUpCount());
 		tilesList.setState({
 		  countAfter: tilesStore.getTilesDownCount(),
 		  countBefore: tilesStore.getTilesUpCount(),
@@ -80,8 +83,15 @@ let Tiles = React.createClass({
 	},
 	_reEnableScrollingDetection : function() {
 		let tilesList = this;
-		tilesList.scrollDetectionEnabled = true;
-		// tilesList.setState({'scrollDetectionEnabled': true});
+		// delaying the effect, so that any undergoing scrolling can finish before
+		// otherwise will add a new page because scrolling up enters the upper threshold
+		window.setTimeout(
+	      () => { 
+	      	tilesList.scrollDetectionEnabled = true;
+			console.log('enabling scroll detection.'); 
+	      },
+	      500
+	    );
 	},
 	render: function() {
 		let tilesList = this;
